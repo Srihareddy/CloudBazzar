@@ -1,4 +1,45 @@
 # CloudBazzar
+CloudBazzar is a Dockerized microservices-based e-commerce backend built with .NET 8, RabbitMQ, SQL Server, and API Gateway, demonstrating event-driven architecture, JWT authentication, and service-to-service communication.
+# Architecture Overview
+
+Services included:
+
+API Gateway – Single entry point for all services
+
+Identity API – JWT token generation & authentication
+
+Ordering API – Create and manage orders
+
+Payment API – Event-driven payment processing
+
+Catalog API – Product catalog
+
+Basket API – Shopping cart
+
+Notification Worker – Background consumer
+
+RabbitMQ – Event bus
+
+SQL Server – Orders database
+
+PostgreSQL – Catalog database
+
+Redis – Basket cache
+
+Seq – Centralized logging
+
+OpenTelemetry Collector – Observability
+
+
+ # Event-Driven Flow
+
+Order Created
+     ↓
+RabbitMQ (shopsphere.events)
+     ↓
+Payment Consumer
+     ↓
+PaymentSucceeded / PaymentFailed
 
 
 ## What’s inside
