@@ -30,6 +30,59 @@ Seq – Centralized logging
 
 OpenTelemetry Collector – Observability
 
+## 🔐 Authentication (Identity Service)
+
+Generates JWT tokens used to authorize requests across microservices.
+
+![Identity Token](./screenshots/identity-token.png)
+
+---
+
+## 📦 Create Order (Ordering Service)
+
+Creates a new order and publishes an `OrderCreated` event.
+
+![Create Order](./screenshots/create-order.png)
+
+---
+
+## 🔎 Get Order by ID
+
+Fetches order details from SQL Server.
+
+![Get Order](./screenshots/get-order.png)
+
+---
+
+## 💳 Payment Processing (Event Consumer)
+
+Payment service consumes `OrderCreated` events from RabbitMQ.
+
+![Payment Consumer Log](./screenshots/payment-consumer-log.png)
+
+---
+
+## 🐇 RabbitMQ – Payment Queue
+
+Shows message flow and active consumer.
+
+![RabbitMQ Overview](./screenshots/rabbitmq-overview.png)
+
+---
+
+## 🌐 API Gateway Routes
+
+Centralized routing through Gateway API.
+
+![Gateway Routes](./screenshots/gateway-routes.png)
+
+---
+
+## 🔑 Swagger Authorization
+
+JWT-based authorization in Swagger UI.
+
+![Swagger Authorize](./screenshots/swagger-authorize.png)
 
  # Event-Driven Flow
 
