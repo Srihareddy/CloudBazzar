@@ -1,4 +1,4 @@
-# ShopSphere
+# CloudBazzar
 
 An intermediate-to-advanced, eShopOnAzure-style **.NET 8** microservices reference project you can publish as a portfolio repo.
 
