@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Build.Traversal" Version="4.1.0" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,129 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports: ["5672:5672", "15672:15672"]
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    ports: ["1433:1433"]
+
+
+  catalogapi:
+    build:
+      context: ../../
+      dockerfile: src/Services/Catalog/Catalog.API/Dockerfile
+    environment:
+      SEQ_URL: http://seq:80
+      ConnectionStrings__CatalogDb: Host=postgres;Port=5432;Database=catalog;Username=postgres;Password=postgres
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports: ["5001:8080"]
+    depends_on: [postgres, seq, rabbitmq]
+
+  basketapi:
+    build:
+      context: ../../
+      dockerfile: src/Services/Basket/Basket.API/Dockerfile
+    environment:
+      SEQ_URL: http://seq:80
+      ConnectionStrings__Redis: redis:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports: ["5002:8080"]
+    depends_on: [redis, seq]
+
+  orderingapi:
+    build:
+      context: ../../
+      dockerfile: src/Services/Ordering/Ordering.API/Dockerfile
+    environment:
+      SEQ_URL: http://seq:80
+      ConnectionStrings__OrderingDb: Server=sqlserver;Database=ordering;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      JWT_KEY: ${JWT_KEY}
+      JWT_ISSUER: ShopSphere.Identity
+      JWT_AUDIENCE: ShopSphere
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports: ["5003:8080"]
+    depends_on: [sqlserver, rabbitmq, seq]
+  paymentapi:
+    build:
+      context: ../../
+      dockerfile: src/Services/Payment/Payment.API/Dockerfile
+    environment:
+      SEQ_URL: http://seq:80
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports: [ "5004:8080" ]
+    depends_on: [ rabbitmq, seq ]
+
+  notificationworker:
+    build:
+      context: ../../
+      dockerfile: src/Services/Notification/Notification.Worker/Dockerfile
+    environment:
+      SEQ_URL: http://seq:80
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    depends_on: [rabbitmq, seq]
+
+  identityapi:
+    build:
+      context: ../../
+      dockerfile: src/Services/Identity/Identity.API/Dockerfile
+    environment:
+      SEQ_URL: http://seq:80
+      JWT_KEY: dev_super_secret_key_change_me_please_32chars
+      JWT_ISSUER: ShopSphere.Identity
+      JWT_AUDIENCE: ShopSphere
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports: ["5006:8080"]
+    depends_on: [seq]
+
+  gateway:
+    build:
+      context: ../../
+      dockerfile: src/ApiGateway/Gateway.API/Dockerfile
+    environment:
+      SEQ_URL: http://seq:80
+    ports: ["8080:8080"]
+    depends_on: [catalogapi, basketapi, orderingapi]
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.106.1
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+
+  seq:
+    image: datalust/seq:latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=true
+    ports:
+      - "5341:80"
+    restart: unless-stopped
+

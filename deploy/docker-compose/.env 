@@ -1,0 +1,2 @@
+MSSQL_SA_PASSWORD=YourStrong@Passw0rd
+JWT_KEY=dev_super_secret_key_change_me_please_32chars

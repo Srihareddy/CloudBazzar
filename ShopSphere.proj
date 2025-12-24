@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.Build.Traversal">
+  <ItemGroup>
+    <ProjectReference Include="src/BuildingBlocks/ShopSphere.SharedKernel/ShopSphere.SharedKernel.csproj" />
+    <ProjectReference Include="src/BuildingBlocks/ShopSphere.EventBus/ShopSphere.EventBus.csproj" />
+    <ProjectReference Include="src/BuildingBlocks/ShopSphere.Observability/ShopSphere.Observability.csproj" />
+    <ProjectReference Include="src/Services/Catalog/Catalog.API/Catalog.API.csproj" />
+    <ProjectReference Include="src/Services/Basket/Basket.API/Basket.API.csproj" />
+    <ProjectReference Include="src/Services/Ordering/Ordering.API/Ordering.API.csproj" />
+    <ProjectReference Include="src/Services/Payment/Payment.API/Payment.API.csproj" />
+    <ProjectReference Include="src/Services/Notification/Notification.Worker/Notification.Worker.csproj" />
+    <ProjectReference Include="src/Services/Identity/Identity.API/Identity.API.csproj" />
+    <ProjectReference Include="src/ApiGateway/Gateway.API/Gateway.API.csproj" />
+    <ProjectReference Include="src/Services/Catalog/Catalog.Tests/Catalog.Tests.csproj" />
+  </ItemGroup>
+</Project>

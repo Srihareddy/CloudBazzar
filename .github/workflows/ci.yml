@@ -1,0 +1,23 @@
+name: ci
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore ShopSphere.proj
+
+      - name: Build
+        run: dotnet build ShopSphere.proj -c Release --no-restore
+
+      - name: Test
+        run: dotnet test src/Services/Catalog/Catalog.Tests/Catalog.Tests.csproj -c Release --no-build

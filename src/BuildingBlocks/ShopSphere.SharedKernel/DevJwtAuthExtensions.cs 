@@ -1,0 +1,41 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+
+namespace ShopSphere.SharedKernel;
+
+public static class DevJwtAuthExtensions
+{
+    public static IServiceCollection AddDevJwtAuth(
+        this IServiceCollection services,
+        IConfiguration config)
+    {
+        var key = config["JWT_KEY"]
+                  ?? "dev_super_secret_key_change_me_please_32chars";
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateIssuerSigningKey = true,
+
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(key)
+                    ),
+
+
+                    NameClaimType = JwtRegisteredClaimNames.Sub
+                };
+            });
+
+        services.AddAuthorization();
+
+        return services;
+    }
+}
